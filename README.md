@@ -8,7 +8,9 @@ The data is finally saved in a Google BigQuery table.
 
 to run: 
 `export GOOGLE_APPLICATION_CREDENTIALS='yourappkey.json'`
+
 `gcloud app create`
+
 `gcloud app deploy`
 
 snippet:
