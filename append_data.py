@@ -39,7 +39,7 @@ def get_trafic_data():
 
         return(df)
 
-def save_df_to_bucket(df, bucket_name): 
+def save_df_to_bucket(df, bucket_name, storage_client): 
     # Make buckets 
     try:
         storage_client.create_bucket(bucket_name)
@@ -50,11 +50,8 @@ def save_df_to_bucket(df, bucket_name):
 
 
     # Save data to bucket
-    fn = 'aarhus_data.csv'
-
+    fn = 'gs://aarhus_trafik/test_new_data.csv' 
     df.to_csv(fn)
-    blob = bucket.blob(fn)
-    blob.upload_from_filename(fn)
 
     grouped = df.groupby('vehicleCount')
 
@@ -70,14 +67,11 @@ def save_df_to_bucket(df, bucket_name):
         # Get bucket
         bucket = storage_client.bucket(bucket_name)
 
-        fn = 'aarhus_data_{}.csv'.format(bucket_name)
-
+        fn = 'gs://aarhus_trafik/aarhus_test_data_{}.csv'.format(bucket_name)
+    
         sub_df.to_csv(fn)
-        blob = bucket.blob(fn)
-        blob.upload_from_filename(fn)
 
-
-def save_df_to_table(df, dataset_name, table_name):
+def save_df_to_table(df, dataset_name, table_name, bq_client):
     # Make table 
     try:
         dataset = bq_client.create_dataset(dataset_name)
@@ -95,10 +89,17 @@ def save_df_to_table(df, dataset_name, table_name):
     job = bq_client.load_table_from_dataframe(df, table_ref, job_config=job_config)
 
 
-bq_client = bigquery.Client()
-storage_client = storage.Client()
+def run_append():
+
+    OUTPUT_DATASET = 'aarhus'
+    OUTPUT_TABLE = 'trafik'
+    OUTPUT_BUCKET = 'aarhus_trafik'
 
 
-df = get_trafic_data()
-save_df_to_bucket(df, OUTPUT_BUCKET)
-save_df_to_table(df, OUTPUT_DATASET, OUTPUT_BUCKET)
+    bq_client = bigquery.Client()
+    storage_client = storage.Client()
+
+
+    df = get_trafic_data()
+    save_df_to_bucket(df, OUTPUT_BUCKET, storage_client)
+    save_df_to_table(df, OUTPUT_DATASET, OUTPUT_BUCKET, bq_client)
