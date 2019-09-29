@@ -23,17 +23,17 @@ def get_trafic_data():
     data = get_data(data_url)
     n_results = data['result']['total']
     df = pd.DataFrame(data['result']['records'])
-    print(n_results)
+    #print(n_results)
     i = 100
     if n_results < 100: 
         return(df)
     else:
         while i < n_results:
             next_page_url = base_url.format('offset='+str(i)+'&')
-            print(next_page_url)
+            #print(next_page_url)
             data = get_data(next_page_url)
             df_next_page = pd.DataFrame(data['result']['records'])
-            print(df_next_page.head())
+            #print(df_next_page.head())
             df = df.append(df_next_page)
             i += 100
 
@@ -48,7 +48,6 @@ def save_df_to_bucket(df, bucket_name, storage_client):
     # Get bucket
     bucket = storage_client.bucket(bucket_name)
 
-
     # Save data to bucket
     fn = 'gs://aarhus_trafik/test_new_data.csv' 
     df.to_csv(fn)
@@ -57,7 +56,7 @@ def save_df_to_bucket(df, bucket_name, storage_client):
 
     for count, sub_df in grouped:
         bucket_name = 'vehiclecount-{}'.format(count)
-        print(count)
+        #print(count)
         time.sleep(2)
         try:
             storage_client.create_bucket(bucket_name)
@@ -67,7 +66,7 @@ def save_df_to_bucket(df, bucket_name, storage_client):
         # Get bucket
         bucket = storage_client.bucket(bucket_name)
 
-        fn = 'gs://aarhus_trafik/aarhus_test_data_{}.csv'.format(bucket_name)
+        fn = 'gs://{}/aarhus_data.csv'.format(bucket_name)
     
         sub_df.to_csv(fn)
 
@@ -95,10 +94,8 @@ def run_append():
     OUTPUT_TABLE = 'trafik'
     OUTPUT_BUCKET = 'aarhus_trafik'
 
-
     bq_client = bigquery.Client()
     storage_client = storage.Client()
-
 
     df = get_trafic_data()
     save_df_to_bucket(df, OUTPUT_BUCKET, storage_client)
