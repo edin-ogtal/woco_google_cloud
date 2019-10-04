@@ -49,7 +49,8 @@ def save_df_to_bucket(df, bucket_name, storage_client):
     bucket = storage_client.bucket(bucket_name)
 
     # Save data to bucket
-    fn = 'gs://aarhus_trafik/test_new_data.csv' 
+    timestr = time.strftime("%Y%m%d_%H%M")
+    fn = 'gs://{}/data_{}.csv'.format(bucket_name,timestr) 
     df.to_csv(fn)
 
     grouped = df.groupby('vehicleCount')
