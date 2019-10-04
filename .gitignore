@@ -2,5 +2,6 @@
 *.ipynb*
 *.json
 *.pyc
+*.ini
 Pipfile
 Pipfile.lock
