@@ -4,10 +4,6 @@ import urllib.request, json
 from google.cloud import bigquery, storage
 from google.cloud.exceptions import NotFound, Conflict
 
-OUTPUT_DATASET = 'aarhus'
-OUTPUT_TABLE = 'trafik'
-OUTPUT_BUCKET = 'aarhus_trafik'
-
 def get_data(url):
     with urllib.request.urlopen(url) as f: 
         data = json.loads(f.read().decode()) 
