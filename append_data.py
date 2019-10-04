@@ -38,7 +38,8 @@ def get_trafic_data():
 def save_df_to_bucket(df, bucket_name, storage_client): 
     # Make buckets 
     try:
-        storage_client.create_bucket(bucket_name)
+        bucket = storage_client.bucket(bucket_name)
+        bucket.create(location='EU')
     except Conflict:
         pass
     # Get bucket
@@ -56,7 +57,8 @@ def save_df_to_bucket(df, bucket_name, storage_client):
         #print(count)
         time.sleep(2)
         try:
-            storage_client.create_bucket(bucket_name)
+            bucket = storage_client.bucket(bucket_name)
+            bucket.create(location='EU')
         except Conflict:
             pass
 
@@ -70,7 +72,9 @@ def save_df_to_bucket(df, bucket_name, storage_client):
 def save_df_to_table(df, dataset_name, table_name, bq_client):
     # Make table 
     try:
-        dataset = bq_client.create_dataset(dataset_name)
+        dataset = bigquery.Dataset(dataset_name)
+        dataset.location = 'EU'
+        dataset = bq_client.create_dataset(dataset)
     except Conflict:
         pass
     # Get table 
